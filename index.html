@@ -126,6 +126,14 @@ margin-bottom:6px;
 color:black;
 }
 
+/* icon */
+.server-icon{
+width:32px;
+height:32px;
+image-rendering:pixelated;
+margin-bottom:6px;
+}
+
 /* notification */
 .notification{
 position:fixed;
@@ -155,9 +163,11 @@ z-index:10;
 <div class="mc-header">JAVA EDITION</div>
 <div class="mc-body">
 
+<img id="java-icon" class="server-icon">
+
 <div class="mc-row">
 <span>ACoolServerEG.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServer.aternos.me')">COPY</button>
+<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
 </div>
 
 <div id="java-motd" class="motd">Loading...</div>
@@ -174,6 +184,8 @@ z-index:10;
 <div class="mc-panel">
 <div class="mc-header">BEDROCK EDITION</div>
 <div class="mc-body">
+
+<img id="bedrock-icon" class="server-icon">
 
 <div class="mc-row">
 <span>ACoolServerBE.aternos.me</span>
@@ -259,10 +271,10 @@ if(open) result+="</span>";
 return result;
 }
 
-// JAVA STATUS
+// JAVA
 async function updateJava(){
 try{
-let res=await fetch("https://api.mcsrvstat.us/2/ACoolServer.aternos.me");
+let res=await fetch("https://api.mcsrvstat.us/2/ACoolServerEG.aternos.me");
 let data=await res.json();
 
 if(data.online){
@@ -271,6 +283,10 @@ data.players.online + "/" + data.players.max;
 
 document.getElementById("java-motd").innerHTML =
 formatMOTD(data.motd.raw.join(" "));
+
+if(data.icon){
+document.getElementById("java-icon").src = data.icon;
+}
 }else{
 document.getElementById("java-players").innerText="0/0";
 document.getElementById("java-motd").innerText="Offline";
@@ -278,10 +294,10 @@ document.getElementById("java-motd").innerText="Offline";
 }catch{}
 }
 
-// BEDROCK STATUS
+// BEDROCK
 async function updateBedrock(){
 try{
-let res=await fetch("https://api.mcsrvstat.us/bedrock/2/ACoolServerBE.aternos.me:48917");
+let res=await fetch("https://api.mcsrvstat.us/bedrock/2/ACoolServerBE.aternos.me/48917");
 let data=await res.json();
 
 if(data.online){
@@ -290,6 +306,10 @@ data.players.online + "/" + data.players.max;
 
 document.getElementById("bedrock-motd").innerHTML =
 formatMOTD(data.motd.raw.join(" "));
+
+if(data.icon){
+document.getElementById("bedrock-icon").src = data.icon;
+}
 }else{
 document.getElementById("bedrock-players").innerText="0/0";
 document.getElementById("bedrock-motd").innerText="Offline";
@@ -297,7 +317,7 @@ document.getElementById("bedrock-motd").innerText="Offline";
 }catch{}
 }
 
-// update loop
+// loop
 updateJava();
 updateBedrock();
 setInterval(()=>{
@@ -307,4 +327,4 @@ updateBedrock();
 </script>
 
 </body>
-</html>
+  </html>
