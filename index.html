@@ -28,16 +28,14 @@ background:#0d1b2a;
 font-family:'Minecraft','Press Start 2P', monospace;
 color:white;
 
-/* FIX SCROLL + AUTO FIT */
+/* FIX */
 overflow-x:hidden;
 overflow-y:auto;
 
-display:flex;
-flex-direction:column;
-align-items:center;
+position:relative;
 }
 
-/* Stars background */
+/* STARS (behind everything) */
 #stars{
 position:fixed;
 inset:0;
@@ -53,16 +51,27 @@ background:white;
 animation:twinkle 2s infinite;
 }
 
-@keyframes twinkle{
-50%{opacity:0;}
+@keyframes twinkle{50%{opacity:0;}}
+
+/* MAIN LAYOUT */
+.page{
+position:relative;
+z-index:2;
+
+min-height:100vh;
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+padding:10px;
+gap:10px;
 }
 
-/* Title */
+/* TITLE */
 .title{
-z-index:2;
 text-align:center;
-font-size:18px;
-margin:12px 0;
+font-size:16px;
 animation:float 2s ease-in-out infinite;
 text-shadow:3px 3px 0 black;
 }
@@ -72,20 +81,18 @@ text-shadow:3px 3px 0 black;
 50%{transform:translateY(-5px);}
 }
 
-/* Wrapper (AUTO FIT LAYOUT) */
+/* WRAPPER */
 .wrapper{
-z-index:2;
 width:95%;
 max-width:600px;
 
 display:flex;
 flex-direction:column;
 gap:10px;
-
 padding-bottom:20px;
 }
 
-/* Panels */
+/* PANELS */
 .mc-panel{
 background:#c6c6c6;
 border:4px solid #000;
@@ -106,21 +113,20 @@ padding:10px;
 background:#aaaaaa;
 }
 
-/* Rows */
+/* ROWS */
 .mc-row{
 display:flex;
 justify-content:space-between;
 align-items:center;
 background:#8b8b8b;
 border:3px solid #000;
-box-shadow: inset -2px -2px 0 #555, inset 2px 2px 0 #fff;
 padding:8px;
 margin-bottom:6px;
 color:black;
 font-size:8px;
 }
 
-/* Buttons */
+/* BUTTONS */
 .mc-btn{
 background:#c6c6c6;
 border:3px solid #000;
@@ -146,9 +152,10 @@ font-size:8px;
 .motd{
 font-size:8px;
 margin-bottom:8px;
+color:black;
 }
 
-/* Notification */
+/* NOTIF */
 .notification{
 position:fixed;
 bottom:15px;
@@ -161,9 +168,7 @@ z-index:10;
 font-size:8px;
 }
 
-.notification.show{
-display:block;
-}
+.notification.show{display:block;}
 </style>
 </head>
 
@@ -171,11 +176,13 @@ display:block;
 
 <div id="stars"></div>
 
+<div class="page">
+
 <div class="title">⛏ ACOOLSERVER</div>
 
 <div class="wrapper">
 
-<!-- SERVER INFO -->
+<!-- INFO -->
 <div class="mc-panel">
 <div class="mc-header">SERVER INFO</div>
 <div class="mc-body">
@@ -183,7 +190,7 @@ display:block;
 </div>
 </div>
 
-<!-- BEDROCK FIRST -->
+<!-- BEDROCK -->
 <div class="mc-panel">
 <div class="mc-header">BEDROCK EDITION</div>
 <div class="mc-body">
@@ -223,6 +230,7 @@ ADD TO BEDROCK
 </div>
 
 </div>
+</div>
 
 <div id="notif" class="notification">Copied!</div>
 
@@ -245,7 +253,7 @@ n.classList.add("show");
 setTimeout(()=>n.classList.remove("show"),1500);
 }
 
-// MOTD formatter
+// MOTD
 function formatMOTD(text){
 const colors={
 "0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
@@ -292,8 +300,8 @@ if(data.online){
 document.getElementById("players").innerText =
 data.players.online+"/"+data.players.max;
 
-let raw=data.motd.raw.join(" ");
-document.getElementById("motd").innerHTML=formatMOTD(raw);
+document.getElementById("motd").innerHTML =
+formatMOTD(data.motd.raw.join(" "));
 }else{
 document.getElementById("players").innerText="Offline";
 document.getElementById("motd").innerText="Server Offline";
@@ -308,239 +316,4 @@ setInterval(update,10000);
 </script>
 
 </body>
-    </html>}
-
-/* Stars */
-.star{
-position:absolute;
-width:3px;height:3px;
-background:white;
-animation:twinkle 2s infinite;
-}
-@keyframes twinkle{50%{opacity:0;}}
-
-/* Panels */
-.wrapper{
-max-width:600px;
-margin:auto;
-padding:20px;
-}
-
-.mc-panel{
-background:#c6c6c6;
-border:4px solid #000;
-box-shadow: inset -4px -4px 0 #555, inset 4px 4px 0 #fff;
-margin-bottom:12px;
-}
-
-.mc-header{
-background:#8b8b8b;
-border-bottom:4px solid #000;
-padding:10px;
-text-align:center;
-color:black;
-}
-
-.mc-body{
-padding:12px;
-background:#aaaaaa;
-}
-
-.mc-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:#8b8b8b;
-border:3px solid #000;
-box-shadow: inset -2px -2px 0 #555, inset 2px 2px 0 #fff;
-padding:10px;
-margin-bottom:8px;
-color:black;
-}
-
-/* Buttons */
-.mc-btn{
-background:#c6c6c6;
-border:3px solid #000;
-padding:6px;
-font-family:'Minecraft','Press Start 2P';
-cursor:pointer;
-font-size:8px;
-}
-
-.big-btn{
-display:block;
-text-align:center;
-padding:10px;
-margin-top:10px;
-background:#c6c6c6;
-border:4px solid #000;
-text-decoration:none;
-color:black;
-}
-
-/* MOTD */
-.motd{
-font-size:8px;
-margin-bottom:10px;
-}
-.motd span{
-text-shadow:1px 1px 0 black;
-}
-
-/* Notification */
-.notification{
-position:fixed;
-bottom:20px;
-left:20px;
-background:black;
-color:#55ff55;
-padding:10px;
-display:none;
-}
-.notification.show{display:block;}
-</style>
-</head>
-
-<body>
-
-<div id="stars"></div>
-
-<div class="title">⛏ ACOOLSERVER</div>
-
-<div class="wrapper">
-
-<!-- INFO -->
-<div class="mc-panel">
-<div class="mc-header">SERVER INFO</div>
-<div class="mc-body">
-<div id="motd" class="motd">Loading MOTD...</div>
-</div>
-</div>
-
-<!-- BEDROCK (NOW ON TOP) -->
-<div class="mc-panel">
-<div class="mc-header">BEDROCK EDITION</div>
-<div class="mc-body">
-
-<div class="mc-row">
-<span>ACoolServerBE.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServerBE.aternos.me')">COPY</button>
-</div>
-
-<div class="mc-row">
-<span>PORT: 48917</span>
-<button class="mc-btn" onclick="copyText('48917')">COPY</button>
-</div>
-
-<a class="big-btn" href="minecraft://?addExternalServer=ACoolServerBE|ACoolServerBE.aternos.me:48917">
-ADD TO BEDROCK
-</a>
-
-</div>
-</div>
-
-<!-- JAVA -->
-<div class="mc-panel">
-<div class="mc-header">JAVA EDITION</div>
-<div class="mc-body">
-
-<div class="mc-row">
-<span>ACoolServer.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServer.aternos.me')">COPY</button>
-</div>
-
-<div class="mc-row">
-<span>PLAYERS: <span id="players">...</span></span>
-</div>
-
-</div>
-</div>
-
-</div>
-
-<div id="notif" class="notification">Copied!</div>
-
-<script>
-// stars
-const stars=document.getElementById("stars");
-for(let i=0;i<80;i++){
-let s=document.createElement("div");
-s.className="star";
-s.style.left=Math.random()*100+"%";
-s.style.top=Math.random()*80+"%";
-stars.appendChild(s);
-}
-
-// copy
-function copyText(text){
-navigator.clipboard.writeText(text);
-let n=document.getElementById("notif");
-n.classList.add("show");
-setTimeout(()=>n.classList.remove("show"),1500);
-}
-
-// MOTD colors
-function formatMOTD(text){
-const colors={
-"0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
-"4":"#AA0000","5":"#AA00AA","6":"#FFAA00","7":"#AAAAAA",
-"8":"#555555","9":"#5555FF","a":"#55FF55","b":"#55FFFF",
-"c":"#FF5555","d":"#FF55FF","e":"#FFFF55","f":"#FFFFFF"
-};
-
-let result="",open=false;
-
-for(let i=0;i<text.length;i++){
-if(text[i]=="§"){
-let code=text[i+1]?.toLowerCase();
-
-if(colors[code]){
-if(open) result+="</span>";
-result+=`<span style="color:${colors[code]}">`;
-open=true;
-i++;
-continue;
-}
-
-if(code==="r"){
-if(open) result+="</span>";
-open=false;
-i++;
-continue;
-}
-}
-result+=text[i];
-}
-
-if(open) result+="</span>";
-return result;
-}
-
-// fetch server
-async function update(){
-try{
-let res=await fetch("https://api.mcsrvstat.us/2/ACoolServer.aternos.me");
-let data=await res.json();
-
-if(data.online){
-document.getElementById("players").innerText =
-data.players.online+"/"+data.players.max;
-
-let raw=data.motd.raw.join(" ");
-document.getElementById("motd").innerHTML=formatMOTD(raw);
-}else{
-document.getElementById("players").innerText="Offline";
-document.getElementById("motd").innerText="Server Offline";
-}
-}catch{
-document.getElementById("players").innerText="Error";
-}
-}
-
-update();
-setInterval(update,10000);
-</script>
-
-</body>
-</html>
+    </html>
