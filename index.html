@@ -46,7 +46,7 @@ position:relative;
 z-index:2;
 width:100%;
 max-width:600px;
-margin:0 auto;
+margin:auto;
 padding:10px;
 }
 
@@ -159,10 +159,12 @@ z-index:10;
 <div class="mc-header">SERVER INFO</div>
 <div class="mc-body">
 <div id="motd" class="motd">Loading MOTD...</div>
+
 <div class="mc-row">
 <span>PLAYERS:</span>
 <span id="players">...</span>
 </div>
+
 </div>
 </div>
 
@@ -224,7 +226,7 @@ n.classList.add("show");
 setTimeout(()=>n.classList.remove("show"),1200);
 }
 
-// FULL MOTD COLOR SUPPORT
+// FULL FORMAT (colors + bold + italic)
 function formatMOTD(text){
 const colors={
 "0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
@@ -234,6 +236,16 @@ const colors={
 };
 
 let result="";
+let styles={color:null,bold:false,italic:false};
+
+function openSpan(){
+let style="";
+if(styles.color) style+=`color:${styles.color};`;
+if(styles.bold) style+="font-weight:bold;";
+if(styles.italic) style+="font-style:italic;";
+return `<span style="${style}">`;
+}
+
 let open=false;
 
 for(let i=0;i<text.length;i++){
@@ -242,14 +254,34 @@ let code=text[i+1]?.toLowerCase();
 
 if(colors[code]){
 if(open) result+="</span>";
-result+=`<span style="color:${colors[code]}">`;
+styles.color=colors[code];
 open=true;
+result+=openSpan();
 i++;
 continue;
 }
 
-if(code==="r"){
+if(code==="l"){ // bold
 if(open) result+="</span>";
+styles.bold=true;
+open=true;
+result+=openSpan();
+i++;
+continue;
+}
+
+if(code==="o"){ // italic
+if(open) result+="</span>";
+styles.italic=true;
+open=true;
+result+=openSpan();
+i++;
+continue;
+}
+
+if(code==="r"){ // reset
+if(open) result+="</span>";
+styles={color:null,bold:false,italic:false};
 open=false;
 i++;
 continue;
@@ -262,21 +294,21 @@ if(open) result+="</span>";
 return result;
 }
 
-// fetch server
+// fetch JAVA server
 async function update(){
 try{
 let res=await fetch("https://api.mcsrvstat.us/2/ACoolServerEG.aternos.me");
 let data=await res.json();
 
-if(data.online){
+if(data && data.online){
 document.getElementById("players").innerText =
 data.players.online + "/" + data.players.max;
 
 let raw = data.motd.raw.join("<br>");
 document.getElementById("motd").innerHTML = formatMOTD(raw);
 }else{
-document.getElementById("players").innerText = "0/0";
-document.getElementById("motd").innerText = "Offline";
+document.getElementById("players").innerText="0/0";
+document.getElementById("motd").innerText="Offline";
 }
 }catch{
 document.getElementById("players").innerText="ERR";
