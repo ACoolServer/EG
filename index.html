@@ -3,301 +3,825 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACoolServer</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
+<title>Mohamed's Servers</title>
 <style>
-@font-face {
-  font-family: 'Minecraft';
-  src: url('Minecraft.ttf') format('truetype');
-}
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('Minecraft.ttf') format('truetype');
+  }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+  :root {
+    --dirt-dark: #5a3a1a;
+    --dirt-mid: #8b5a2b;
+    --grass-top: #5d9e3f;
+    --grass-side: #4a7d32;
+    --stone: #888888;
+    --stone-dark: #5a5a5a;
+    --wood: #a0723a;
+    --wood-dark: #7a5228;
+    --ui-bg: #1a1a1aee;
+    --ui-border: #555555;
+    --ui-border-light: #aaaaaa;
+    --btn-normal: #555555;
+    --btn-hover: #6b6b6b;
+    --btn-shadow: #333333;
+    --btn-highlight: #888888;
+    --java-green: #55ff55;
+    --bedrock-blue: #5555ff;
+    --gold: #ffaa00;
+    --red: #ff5555;
+    --yellow: #ffff55;
+    --aqua: #55ffff;
+    --white: #ffffff;
+    --gray: #aaaaaa;
+    --dark-gray: #555555;
+    --pink: #ff55ff;
+  }
 
-body{
-background:#0d1b2a;
-font-family:'Minecraft','Press Start 2P',monospace;
-color:white;
-overflow-x:hidden;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* stars */
-#stars{
-position:fixed;
-inset:0;
-pointer-events:none;
-z-index:0;
-}
+  body {
+    font-family: 'Minecraft', monospace;
+    background-color: #1a1a2e;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.15) 31px, rgba(0,0,0,0.15) 32px),
+      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(0,0,0,0.15) 31px, rgba(0,0,0,0.15) 32px);
+    background-size: 32px 32px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: white;
+    image-rendering: pixelated;
+  }
 
-.star{
-position:absolute;
-width:2px;
-height:2px;
-background:white;
-animation:twinkle 2s infinite;
-}
+  /* Animated background stars */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1px 1px at 10% 20%, white, transparent),
+      radial-gradient(1px 1px at 30% 80%, white, transparent),
+      radial-gradient(1px 1px at 60% 15%, white, transparent),
+      radial-gradient(1px 1px at 75% 60%, white, transparent),
+      radial-gradient(1px 1px at 90% 35%, white, transparent),
+      radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(2px 2px at 20% 45%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 85% 80%, white, transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-@keyframes twinkle{50%{opacity:0;}}
+  .sky-gradient {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg,
+      #0a0a2e 0%,
+      #1a1a4a 25%,
+      #2a3a6a 50%,
+      #1a2a4a 75%,
+      #0a1a2a 100%
+    );
+    z-index: -1;
+  }
 
-/* layout */
-.container{
-position:relative;
-z-index:2;
-max-width:600px;
-margin:auto;
-padding:10px;
-}
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #55ff55;
+    opacity: 0;
+    animation: float-up 8s infinite;
+    image-rendering: pixelated;
+  }
+  .particle:nth-child(2) { left: 20%; animation-delay: 1s; background: #ffaa00; }
+  .particle:nth-child(3) { left: 40%; animation-delay: 2s; background: #55ffff; }
+  .particle:nth-child(4) { left: 60%; animation-delay: 3s; background: #ff55ff; }
+  .particle:nth-child(5) { left: 80%; animation-delay: 4s; background: #ffff55; }
+  .particle:nth-child(6) { left: 10%; animation-delay: 5s; background: #ffffff; }
+  .particle:nth-child(7) { left: 70%; animation-delay: 6s; background: #55ff55; }
+  .particle:nth-child(8) { left: 50%; animation-delay: 7s; background: #ffaa00; }
+  @keyframes float-up {
+    0% { bottom: -10px; opacity: 0; transform: translateX(0); }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.4; }
+    100% { bottom: 100vh; opacity: 0; transform: translateX(20px); }
+  }
 
-/* title */
-.title{
-text-align:center;
-font-size:14px;
-margin:10px 0 15px;
-animation:float 2s infinite ease-in-out;
-text-shadow:2px 2px 0 black;
-}
+  /* Main container */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
 
-@keyframes float{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-4px);}
-}
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-top: 20px;
+  }
 
-/* panels */
-.mc-panel{
-background:#c6c6c6;
-border:3px solid #000;
-box-shadow: inset -2px -2px 0 #555, inset 2px 2px 0 #fff;
-margin-bottom:10px;
-}
+  .header-title {
+    font-size: clamp(20px, 5vw, 36px);
+    color: #ffaa00;
+    text-shadow:
+      3px 3px 0 #7a5200,
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+    letter-spacing: 2px;
+    animation: title-pulse 3s ease-in-out infinite;
+    display: block;
+    line-height: 1.4;
+  }
+  .header-title span {
+    color: #55ff55;
+    text-shadow:
+      3px 3px 0 #1a7a1a,
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+  }
+  @keyframes title-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
 
-.mc-header{
-background:#8b8b8b;
-color:black;
-text-align:center;
-padding:6px;
-font-size:8px;
-border-bottom:3px solid #000;
-}
+  .header-subtitle {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaaaaa;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+  }
 
-.mc-body{
-background:#aaaaaa;
-padding:8px;
-}
+  /* Pixelated divider */
+  .divider {
+    height: 8px;
+    background: repeating-linear-gradient(90deg,
+      #5d9e3f 0px, #5d9e3f 16px,
+      #4a7d32 16px, #4a7d32 32px,
+      #5d9e3f 32px
+    );
+    box-shadow: 0 4px 0 #3a5a20, 0 -2px 0 #7aca55;
+    margin: 20px 0;
+    image-rendering: pixelated;
+  }
 
-/* rows */
-.mc-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:#8b8b8b;
-border:2px solid #000;
-padding:6px;
-margin-bottom:6px;
-color:black;
-font-size:7px;
-}
+  /* Cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
 
-/* buttons */
-.mc-btn{
-background:#c6c6c6;
-border:2px solid #000;
-padding:4px;
-font-size:6px;
-font-family:'Minecraft','Press Start 2P';
-cursor:pointer;
-}
+  /* Minecraft card */
+  .mc-card {
+    background: #1a1a1a;
+    border: 3px solid #555555;
+    border-top-color: #888888;
+    border-left-color: #888888;
+    border-bottom-color: #333333;
+    border-right-color: #333333;
+    padding: 16px;
+    position: relative;
+    box-shadow:
+      inset 1px 1px 0 #666666,
+      inset -1px -1px 0 #222222,
+      4px 4px 0 rgba(0,0,0,0.6);
+    animation: card-in 0.4s ease both;
+  }
+  .mc-card:nth-child(2) { animation-delay: 0.1s; }
 
-.big-btn{
-display:block;
-text-align:center;
-padding:7px;
-margin-top:6px;
-background:#c6c6c6;
-border:3px solid #000;
-font-size:7px;
-color:black;
-text-decoration:none;
-}
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-/* motd */
-.motd{
-font-size:7px;
-margin-bottom:6px;
-color:black;
-line-height:1.4;
-}
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
 
-/* notification */
-.notification{
-position:fixed;
-bottom:10px;
-left:10px;
-background:black;
-color:#55ff55;
-padding:6px;
-font-size:7px;
-display:none;
-z-index:10;
-}
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
 
-.notification.show{display:block;}
+  .card-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .bedrock-title { color: #5599ff; text-shadow: 2px 2px 0 #002299, 0 0 8px #0044ff44; }
+  .java-title { color: #55ff55; text-shadow: 2px 2px 0 #005500, 0 0 8px #00ff0044; }
+
+  .card-badge {
+    margin-left: auto;
+    font-size: 8px;
+    padding: 3px 7px;
+    border: 2px solid;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .bedrock-badge { color: #5599ff; border-color: #5599ff; }
+  .java-badge { color: #55ff55; border-color: #55ff55; }
+
+  /* Info rows */
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+  .info-label {
+    color: #888;
+    min-width: 38px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .info-value {
+    color: #ffff55;
+    text-shadow: 1px 1px 0 #555500;
+    word-break: break-all;
+  }
+  .copy-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #555;
+    color: #aaa;
+    font-family: 'Minecraft', monospace;
+    font-size: 8px;
+    cursor: pointer;
+    padding: 2px 6px;
+    transition: all 0.1s;
+  }
+  .copy-btn:hover { background: #333; color: #fff; border-color: #888; }
+  .copy-btn:active { transform: scale(0.95); }
+
+  /* MOTD Box */
+  .motd-box {
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-top-color: #222;
+    border-left-color: #222;
+    padding: 10px 12px;
+    margin: 12px 0;
+    min-height: 52px;
+    font-size: 11px;
+    line-height: 1.6;
+    position: relative;
+    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  .motd-loading {
+    color: #555;
+    animation: blink 1s step-end infinite;
+    font-size: 10px;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .motd-line { display: block; white-space: pre-wrap; word-break: break-word; }
+
+  /* Player bar */
+  .player-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    font-size: 9px;
+  }
+  .player-label { color: #888; }
+  .player-count { color: #55ff55; }
+  .player-max { color: #aaa; }
+  .ping-dot {
+    width: 8px; height: 8px;
+    background: #55ff55;
+    border-radius: 0;
+    margin-left: auto;
+    box-shadow: 0 0 6px #55ff55;
+    animation: ping-pulse 2s ease-in-out infinite;
+  }
+  .ping-dot.offline { background: #ff5555; box-shadow: 0 0 6px #ff5555; animation: none; }
+  @keyframes ping-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px #55ff55; }
+    50% { opacity: 0.6; box-shadow: 0 0 12px #55ff55; }
+  }
+  .ping-label { font-size: 8px; color: #888; }
+
+  /* Health bar style player bar */
+  .health-bar {
+    height: 6px;
+    background: #222;
+    border: 1px solid #333;
+    flex: 1;
+    overflow: hidden;
+  }
+  .health-fill {
+    height: 100%;
+    background: #55ff55;
+    transition: width 0.5s ease;
+  }
+
+  /* Buttons */
+  .mc-btn {
+    display: block;
+    width: 100%;
+    padding: 9px 12px;
+    background: linear-gradient(180deg, #555 0%, #444 50%, #3a3a3a 51%, #444 100%);
+    border: 2px solid #222;
+    border-top-color: #777;
+    border-left-color: #777;
+    color: #ddd;
+    font-family: 'Minecraft', monospace;
+    font-size: 11px;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #000;
+    box-shadow: 3px 3px 0 #000, inset 0 1px 0 #888;
+    margin-top: 8px;
+    text-decoration: none;
+    transition: transform 0.05s, filter 0.1s;
+    position: relative;
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+  .mc-btn:hover {
+    background: linear-gradient(180deg, #777 0%, #666 50%, #555 51%, #666 100%);
+    color: #fff;
+    filter: brightness(1.15);
+  }
+  .mc-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #000;
+  }
+  .mc-btn.green {
+    background: linear-gradient(180deg, #2a6a1a 0%, #1e5214 50%, #183e10 51%, #1e5214 100%);
+    border-top-color: #4a9a2a;
+    border-left-color: #4a9a2a;
+    color: #aaffaa;
+  }
+  .mc-btn.green:hover { background: linear-gradient(180deg, #3a8a2a 0%, #2a6a1e 50%, #1e5218 51%, #2a6a1e 100%); color: #ccffcc; }
+
+  .mc-btn.blue {
+    background: linear-gradient(180deg, #1a3a6a 0%, #142a52 50%, #0e1e3a 51%, #142a52 100%);
+    border-top-color: #2a5aaa;
+    border-left-color: #2a5aaa;
+    color: #aaaaff;
+  }
+  .mc-btn.blue:hover { background: linear-gradient(180deg, #2a4a8a 0%, #1a3a62 50%, #12264a 51%, #1a3a62 100%); color: #ccccff; }
+
+  .mc-btn.red {
+    background: linear-gradient(180deg, #6a1a1a 0%, #521414 50%, #3a0e0e 51%, #521414 100%);
+    border-top-color: #aa2a2a;
+    border-left-color: #aa2a2a;
+    color: #ffaaaa;
+  }
+  .mc-btn.red:hover { background: linear-gradient(180deg, #8a2a2a 0%, #6a1a1a 50%, #4a1212 51%, #6a1a1a 100%); color: #ffcccc; }
+
+  /* Wake server section */
+  .wake-section {
+    margin-top: 8px;
+    border-top: 1px solid #333;
+    padding-top: 8px;
+  }
+  .wake-label {
+    font-size: 8px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: #1a1a1a;
+    border: 2px solid #555;
+    border-top-color: #888;
+    border-left-color: #888;
+    padding: 10px 20px;
+    color: #55ff55;
+    font-family: 'Minecraft', monospace;
+    font-size: 11px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 3px 3px 0 #000;
+    z-index: 9999;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* Grass bottom decoration */
+  .grass-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(90deg,
+      #5d9e3f 0px, #5d9e3f 16px,
+      #4a7d32 16px, #4a7d32 32px
+    );
+    box-shadow: 0 -4px 0 #8b5a2b;
+    z-index: 100;
+    image-rendering: pixelated;
+  }
+
+  /* Refresh btn */
+  .refresh-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+  .refresh-tiny {
+    background: none;
+    border: 1px solid #333;
+    color: #555;
+    font-family: 'Minecraft', monospace;
+    font-size: 8px;
+    cursor: pointer;
+    padding: 2px 6px;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+  }
+  .refresh-tiny:hover { color: #aaa; border-color: #555; }
+
+  /* Online indicator */
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 8px;
+    margin-bottom: 6px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #555;
+    box-shadow: none;
+  }
+  .status-dot.online { background: #55ff55; box-shadow: 0 0 6px #55ff5566; }
+  .status-dot.offline { background: #ff5555; }
+  .status-text { color: #888; }
+  .status-text.online { color: #55ff55; }
+  .status-text.offline { color: #ff5555; }
+
+  /* Version tag */
+  .version-tag {
+    font-size: 8px;
+    color: #555;
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
 </style>
 </head>
-
 <body>
-
-<div id="stars"></div>
+<div class="sky-gradient"></div>
+<div class="particles">
+  <div class="particle" style="left:5%"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div>
+</div>
 
 <div class="container">
+  <div class="header">
+    <span class="header-title">⚔ Mohamed's<br><span>Servers</span> ⚔</span>
+    <div class="header-subtitle">✦ Join the adventure ✦</div>
+  </div>
 
-<div class="title">⛏ ACOOLSERVER</div>
+  <div class="divider"></div>
 
-<!-- INFO -->
-<div class="mc-panel">
-<div class="mc-header">SERVER INFO</div>
-<div class="mc-body">
-<div id="motd" class="motd">Loading MOTD...</div>
+  <div class="cards-grid">
 
-<div class="mc-row">
-<span>PLAYERS</span>
-<span id="players">...</span>
+    <!-- BEDROCK CARD -->
+    <div class="mc-card">
+      <div class="card-header">
+        <!-- Bedrock block SVG icon -->
+        <svg class="card-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <rect width="16" height="16" fill="#888"/>
+          <rect x="2" y="2" width="3" height="3" fill="#aaa"/>
+          <rect x="7" y="1" width="2" height="2" fill="#aaa"/>
+          <rect x="11" y="3" width="3" height="2" fill="#aaa"/>
+          <rect x="1" y="7" width="2" height="3" fill="#aaa"/>
+          <rect x="5" y="6" width="3" height="2" fill="#aaa"/>
+          <rect x="10" y="7" width="2" height="3" fill="#aaa"/>
+          <rect x="3" y="11" width="3" height="2" fill="#aaa"/>
+          <rect x="8" y="12" width="4" height="2" fill="#aaa"/>
+          <rect x="0" y="0" width="16" height="1" fill="#999"/>
+          <rect x="0" y="0" width="1" height="16" fill="#999"/>
+          <rect x="0" y="15" width="16" height="1" fill="#666"/>
+          <rect x="15" y="0" width="1" height="16" fill="#666"/>
+        </svg>
+        <div>
+          <div class="card-title bedrock-title">Bedrock Edition</div>
+        </div>
+        <div class="card-badge bedrock-badge">BE</div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">IP:</span>
+        <span class="info-value" id="be-ip">ACoolServerBE.aternos.me</span>
+        <button class="copy-btn" onclick="copyText('ACoolServerBE.aternos.me', 'IP Copied!')">Copy</button>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Port:</span>
+        <span class="info-value">48917</span>
+        <button class="copy-btn" onclick="copyText('48917', 'Port Copied!')">Copy</button>
+      </div>
+
+      <div style="margin-top:4px; font-size:8px; color:#555; letter-spacing:1px; padding: 6px 0;">
+        ▸ Supports: Windows 10/11, Mobile, Console
+      </div>
+
+      <a class="mc-btn blue" href="minecraft://?addExternalServer=Mohamed's Server|ACoolServerBE.aternos.me:48917">
+        📱 Auto Add Server
+      </a>
+
+      <div class="wake-section">
+        <div class="wake-label">— server tools —</div>
+        <button class="mc-btn red" onclick="wakeServer('bedrock')">
+          ⚡ Wake Up Server
+        </button>
+      </div>
+    </div>
+
+    <!-- JAVA CARD -->
+    <div class="mc-card">
+      <div class="card-header">
+        <!-- Grass block SVG icon -->
+        <svg class="card-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <rect width="16" height="16" fill="#8b5a2b"/>
+          <rect x="1" y="3" width="2" height="1" fill="#a0723a"/>
+          <rect x="5" y="5" width="3" height="2" fill="#a0723a"/>
+          <rect x="10" y="4" width="2" height="1" fill="#a0723a"/>
+          <rect x="3" y="9" width="2" height="2" fill="#a0723a"/>
+          <rect x="8" y="10" width="4" height="1" fill="#a0723a"/>
+          <rect x="0" y="0" width="16" height="5" fill="#5d9e3f"/>
+          <rect x="1" y="4" width="1" height="2" fill="#5d9e3f"/>
+          <rect x="3" y="4" width="2" height="1" fill="#5d9e3f"/>
+          <rect x="7" y="4" width="1" height="2" fill="#5d9e3f"/>
+          <rect x="10" y="4" width="2" height="2" fill="#5d9e3f"/>
+          <rect x="13" y="4" width="2" height="1" fill="#5d9e3f"/>
+          <rect x="0" y="0" width="16" height="1" fill="#7aca55"/>
+          <rect x="0" y="0" width="1" height="5" fill="#7aca55"/>
+          <rect x="0" y="15" width="16" height="1" fill="#5a3a1a"/>
+          <rect x="15" y="0" width="1" height="16" fill="#5a3a1a"/>
+        </svg>
+        <div>
+          <div class="card-title java-title">Java Edition</div>
+        </div>
+        <div class="card-badge java-badge">JE</div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">IP:</span>
+        <span class="info-value">ACoolServer.aternos.me</span>
+        <button class="copy-btn" onclick="copyText('ACoolServer.aternos.me', 'IP Copied!')">Copy</button>
+      </div>
+
+      <!-- Status + refresh -->
+      <div class="refresh-row">
+        <button class="refresh-tiny" onclick="fetchJavaStatus()">↻ Refresh</button>
+      </div>
+
+      <div class="status-row">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="status-text" id="status-text">Checking...</span>
+        <span class="version-tag" id="version-tag"></span>
+      </div>
+
+      <!-- MOTD -->
+      <div class="motd-box">
+        <span id="motd-content" class="motd-loading">Fetching server info...</span>
+      </div>
+
+      <!-- Player bar -->
+      <div class="player-bar">
+        <span class="player-label">Players:</span>
+        <span class="player-count" id="player-online">-</span>
+        <span class="player-max" id="player-max">/  -</span>
+        <div class="health-bar"><div class="health-fill" id="player-fill" style="width:0%"></div></div>
+        <div class="ping-dot" id="ping-dot"></div>
+        <span class="ping-label" id="ping-label">--ms</span>
+      </div>
+
+      <div class="wake-section">
+        <div class="wake-label">— server tools —</div>
+        <button class="mc-btn red" onclick="wakeServer('java')">
+          ⚡ Wake Up Server
+        </button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<a class="big-btn" target="_blank"
-href="https://aternos.org/server/#ACoolServerEG">
-AUTO START SERVER
-</a>
-
-</div>
-</div>
-
-<!-- BEDROCK -->
-<div class="mc-panel">
-<div class="mc-header">BEDROCK</div>
-<div class="mc-body">
-
-<div class="mc-row">
-<span>ACoolServerBE.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServerBE.aternos.me')">COPY</button>
-</div>
-
-<div class="mc-row">
-<span>PORT 48917</span>
-<button class="mc-btn" onclick="copyText('48917')">COPY</button>
-</div>
-
-<a class="big-btn" href="minecraft://?addExternalServer=ACoolServerBE|ACoolServerBE.aternos.me:48917">
-ADD TO BEDROCK
-</a>
-
-</div>
-</div>
-
-<!-- JAVA -->
-<div class="mc-panel">
-<div class="mc-header">JAVA</div>
-<div class="mc-body">
-
-<div class="mc-row">
-<span>ACoolServerEG.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
-</div>
-
-</div>
-</div>
-
-</div>
-
-<div id="notif" class="notification">Copied!</div>
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+<div class="grass-bottom"></div>
 
 <script>
-// stars
-const stars=document.getElementById("stars");
-for(let i=0;i<60;i++){
-let s=document.createElement("div");
-s.className="star";
-s.style.left=Math.random()*100+"%";
-s.style.top=Math.random()*100+"%";
-stars.appendChild(s);
-}
-
-// copy
-function copyText(t){
-navigator.clipboard.writeText(t);
-let n=document.getElementById("notif");
-n.classList.add("show");
-setTimeout(()=>n.classList.remove("show"),1200);
-}
-
-// FULL MOTD COLOR SUPPORT
-function formatMOTD(lines){
-const colors={
-"0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
-"4":"#AA0000","5":"#AA00AA","6":"#FFAA00","7":"#AAAAAA",
-"8":"#555555","9":"#5555FF","a":"#55FF55","b":"#55FFFF",
-"c":"#FF5555","d":"#FF55FF","e":"#FFFF55","f":"#FFFFFF"
+// ── Minecraft color code parser ──────────────────────────────
+const MC_COLORS = {
+  '0': '#000000', '1': '#0000aa', '2': '#00aa00', '3': '#00aaaa',
+  '4': '#aa0000', '5': '#aa00aa', '6': '#ffaa00', '7': '#aaaaaa',
+  '8': '#555555', '9': '#5555ff', 'a': '#55ff55', 'b': '#55ffff',
+  'c': '#ff5555', 'd': '#ff55ff', 'e': '#ffff55', 'f': '#ffffff',
+};
+const MC_FORMATS = {
+  'l': 'font-weight:bold',
+  'o': 'font-style:italic',
+  'n': 'text-decoration:underline',
+  'm': 'text-decoration:line-through',
 };
 
-let html="";
+function parseMOTD(raw) {
+  if (!raw) return '<span style="color:#555">No MOTD</span>';
+  // Handle array format (modern API)
+  if (Array.isArray(raw)) {
+    raw = raw.map(p => typeof p === 'string' ? p : (p.text || '')).join('');
+  }
+  if (typeof raw === 'object' && raw.text !== undefined) {
+    raw = raw.text;
+  }
+  raw = String(raw);
 
-lines.forEach(line=>{
-let open=false;
-let result="";
+  let html = '';
+  let color = '#ffffff';
+  let formats = [];
+  let i = 0;
 
-for(let i=0;i<line.length;i++){
-if(line[i]=="§"){
-let code=line[i+1]?.toLowerCase();
-
-if(colors[code]){
-if(open) result+="</span>";
-result+=`<span style="color:${colors[code]}">`;
-open=true;
-i++;
-continue;
+  while (i < raw.length) {
+    if ((raw[i] === '§' || raw[i] === '\u00a7') && i + 1 < raw.length) {
+      const code = raw[i + 1].toLowerCase();
+      if (MC_COLORS[code]) {
+        color = MC_COLORS[code];
+        formats = [];
+      } else if (MC_FORMATS[code]) {
+        formats.push(MC_FORMATS[code]);
+      } else if (code === 'r') {
+        color = '#ffffff';
+        formats = [];
+      }
+      i += 2;
+    } else if (raw[i] === '\n') {
+      html += '<br>';
+      i++;
+    } else {
+      let style = `color:${color};`;
+      if (formats.length) style += formats.join(';') + ';';
+      const char = raw[i].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      html += `<span style="${style}">${char}</span>`;
+      i++;
+    }
+  }
+  return html || '<span style="color:#555">No MOTD</span>';
 }
 
-if(code==="r"){
-if(open) result+="</span>";
-open=false;
-i++;
-continue;
-}
-}
-result+=line[i];
+// ── Fetch Java server status via mcsrvstat.us ────────────────
+async function fetchJavaStatus() {
+  const dot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const motd = document.getElementById('motd-content');
+  const playerOnline = document.getElementById('player-online');
+  const playerMax = document.getElementById('player-max');
+  const playerFill = document.getElementById('player-fill');
+  const pingLabel = document.getElementById('ping-label');
+  const pingDot = document.getElementById('ping-dot');
+  const versionTag = document.getElementById('version-tag');
+
+  motd.className = 'motd-loading';
+  motd.innerHTML = 'Pinging server...';
+  dot.className = 'status-dot';
+  statusText.className = 'status-text';
+  statusText.textContent = 'Checking...';
+
+  const t0 = Date.now();
+  try {
+    const res = await fetch('https://api.mcsrvstat.us/3/ACoolServer.aternos.me');
+    const ping = Date.now() - t0;
+    const data = await res.json();
+
+    if (data.online) {
+      dot.className = 'status-dot online';
+      statusText.className = 'status-text online';
+      statusText.textContent = 'Online';
+      pingLabel.textContent = ping + 'ms';
+      pingDot.className = 'ping-dot';
+
+      // MOTD
+      const rawMotd = data.motd?.raw?.[0]
+        ? data.motd.raw.join('\n')
+        : (data.motd?.clean?.[0] || 'A Minecraft Server');
+      motd.className = 'motd-line';
+      motd.innerHTML = parseMOTD(rawMotd);
+
+      // Players
+      const online = data.players?.online ?? 0;
+      const max = data.players?.max ?? 0;
+      playerOnline.textContent = online;
+      playerMax.textContent = '/ ' + max;
+      const pct = max > 0 ? Math.min(100, (online / max) * 100) : 0;
+      playerFill.style.width = pct + '%';
+      playerFill.style.background = pct > 80 ? '#ff5555' : pct > 50 ? '#ffaa00' : '#55ff55';
+
+      // Version
+      if (data.version) versionTag.textContent = data.version;
+    } else {
+      dot.className = 'status-dot offline';
+      statusText.className = 'status-text offline';
+      statusText.textContent = 'Offline';
+      pingDot.className = 'ping-dot offline';
+      pingLabel.textContent = '--ms';
+      motd.className = 'motd-line';
+      motd.innerHTML = '<span style="color:#ff5555">Server is offline</span><br><span style="color:#888">Try waking it up below!</span>';
+      playerOnline.textContent = '0';
+      playerMax.textContent = '/ 0';
+      playerFill.style.width = '0%';
+    }
+  } catch(e) {
+    dot.className = 'status-dot offline';
+    statusText.textContent = 'Error';
+    motd.innerHTML = '<span style="color:#ff5555">Could not reach API</span>';
+  }
 }
 
-if(open) result+="</span>";
-html+=result+"<br>";
-});
-
-return html;
+// ── Copy to clipboard ────────────────────────────────────────
+function copyText(text, msg) {
+  navigator.clipboard.writeText(text).then(() => showToast('✔ ' + msg));
 }
 
-// fetch
-async function update(){
-try{
-let res=await fetch("https://api.mcsrvstat.us/2/ACoolServerEG.aternos.me");
-let data=await res.json();
-
-if(data.online){
-document.getElementById("players").innerText =
-data.players.online+"/"+data.players.max;
-
-document.getElementById("motd").innerHTML =
-formatMOTD(data.motd.raw);
-}else{
-document.getElementById("players").innerText="0/0";
-document.getElementById("motd").innerHTML="§cOffline";
-}
-}catch{
-document.getElementById("players").innerText="ERR";
-}
+// ── Toast ────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-update();
-setInterval(update,10000);
+// ── Wake server ──────────────────────────────────────────────
+function wakeServer(type) {
+  const ip = type === 'java' ? 'ACoolServer.aternos.me' : 'ACoolServerBE.aternos.me';
+  showToast('⚡ Pinging ' + ip + '...');
+
+  // Trick: open the aternos page in background to try to trigger the server
+  // Also attempts a fetch ping to the server query API
+  const link = document.createElement('a');
+  link.href = 'https://aternos.org/server/';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+
+  // Attempt a query ping (this often activates aternos servers)
+  fetch(`https://api.mcsrvstat.us/3/${ip}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.online) {
+        showToast('✔ Server is already online!');
+        if (type === 'java') fetchJavaStatus();
+      } else {
+        showToast('💤 Server sleeping. Opening Aternos...');
+        setTimeout(() => { window.open('https://aternos.org/server/', '_blank'); }, 800);
+        setTimeout(() => showToast('👆 Log in & press Start!'), 2500);
+      }
+    })
+    .catch(() => {
+      showToast('Opening Aternos panel...');
+      window.open('https://aternos.org/server/', '_blank');
+    });
+}
+
+// ── Init ─────────────────────────────────────────────────────
+fetchJavaStatus();
+setInterval(fetchJavaStatus, 60000); // auto-refresh every 60s
 </script>
-
 </body>
-  </html>
+</html>
