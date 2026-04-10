@@ -32,7 +32,8 @@ z-index:0;
 
 .star{
 position:absolute;
-width:2px;height:2px;
+width:2px;
+height:2px;
 background:white;
 animation:twinkle 2s infinite;
 }
@@ -43,8 +44,9 @@ animation:twinkle 2s infinite;
 .container{
 position:relative;
 z-index:2;
+width:100%;
 max-width:600px;
-margin:auto;
+margin:0 auto;
 padding:10px;
 }
 
@@ -53,7 +55,7 @@ padding:10px;
 text-align:center;
 font-size:14px;
 margin:10px 0 15px;
-animation:float 2s infinite;
+animation:float 2s infinite ease-in-out;
 text-shadow:2px 2px 0 black;
 }
 
@@ -124,14 +126,7 @@ text-decoration:none;
 font-size:7px;
 margin-bottom:6px;
 color:black;
-}
-
-/* icon */
-.server-icon{
-width:32px;
-height:32px;
-image-rendering:pixelated;
-margin-bottom:6px;
+line-height:1.4;
 }
 
 /* notification */
@@ -146,6 +141,7 @@ font-size:7px;
 display:none;
 z-index:10;
 }
+
 .notification.show{display:block;}
 </style>
 </head>
@@ -156,36 +152,24 @@ z-index:10;
 
 <div class="container">
 
-<div class="title">Mohamed's Servers</div>
+<div class="title">⛏ ACOOLSERVER</div>
 
-<!-- JAVA -->
+<!-- INFO -->
 <div class="mc-panel">
-<div class="mc-header">JAVA EDITION</div>
+<div class="mc-header">SERVER INFO</div>
 <div class="mc-body">
-
-<img id="java-icon" class="server-icon">
-
+<div id="motd" class="motd">Loading MOTD...</div>
 <div class="mc-row">
-<span>ACoolServerEG.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
+<span>PLAYERS:</span>
+<span id="players">...</span>
 </div>
-
-<div id="java-motd" class="motd">Loading...</div>
-
-<div class="mc-row">
-<span>PLAYERS</span>
-<span id="java-players">...</span>
-</div>
-
 </div>
 </div>
 
 <!-- BEDROCK -->
 <div class="mc-panel">
-<div class="mc-header">BEDROCK EDITION</div>
+<div class="mc-header">BEDROCK</div>
 <div class="mc-body">
-
-<img id="bedrock-icon" class="server-icon">
 
 <div class="mc-row">
 <span>ACoolServerBE.aternos.me</span>
@@ -197,16 +181,22 @@ z-index:10;
 <button class="mc-btn" onclick="copyText('48917')">COPY</button>
 </div>
 
-<div id="bedrock-motd" class="motd">Loading...</div>
-
-<div class="mc-row">
-<span>PLAYERS</span>
-<span id="bedrock-players">...</span>
-</div>
-
 <a class="big-btn" href="minecraft://?addExternalServer=ACoolServerBE|ACoolServerBE.aternos.me:48917">
 ADD TO BEDROCK
 </a>
+
+</div>
+</div>
+
+<!-- JAVA -->
+<div class="mc-panel">
+<div class="mc-header">JAVA</div>
+<div class="mc-body">
+
+<div class="mc-row">
+<span>ACoolServerEG.aternos.me</span>
+<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
+</div>
 
 </div>
 </div>
@@ -234,7 +224,7 @@ n.classList.add("show");
 setTimeout(()=>n.classList.remove("show"),1200);
 }
 
-// MOTD colors
+// FULL MOTD COLOR SUPPORT
 function formatMOTD(text){
 const colors={
 "0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
@@ -243,7 +233,8 @@ const colors={
 "c":"#FF5555","d":"#FF55FF","e":"#FFFF55","f":"#FFFFFF"
 };
 
-let result="",open=false;
+let result="";
+let open=false;
 
 for(let i=0;i<text.length;i++){
 if(text[i]=="§"){
@@ -271,59 +262,29 @@ if(open) result+="</span>";
 return result;
 }
 
-// JAVA
-async function updateJava(){
+// fetch server
+async function update(){
 try{
 let res=await fetch("https://api.mcsrvstat.us/2/ACoolServerEG.aternos.me");
 let data=await res.json();
 
 if(data.online){
-document.getElementById("java-players").innerText =
+document.getElementById("players").innerText =
 data.players.online + "/" + data.players.max;
 
-document.getElementById("java-motd").innerHTML =
-formatMOTD(data.motd.raw.join(" "));
-
-if(data.icon){
-document.getElementById("java-icon").src = data.icon;
-}
+let raw = data.motd.raw.join("<br>");
+document.getElementById("motd").innerHTML = formatMOTD(raw);
 }else{
-document.getElementById("java-players").innerText="0/0";
-document.getElementById("java-motd").innerText="Offline";
+document.getElementById("players").innerText = "0/0";
+document.getElementById("motd").innerText = "Offline";
 }
-}catch{}
+}catch{
+document.getElementById("players").innerText="ERR";
 }
-
-// BEDROCK
-async function updateBedrock(){
-try{
-let res=await fetch("https://api.mcsrvstat.us/bedrock/2/ACoolServerBE.aternos.me/48917");
-let data=await res.json();
-
-if(data.online){
-document.getElementById("bedrock-players").innerText =
-data.players.online + "/" + data.players.max;
-
-document.getElementById("bedrock-motd").innerHTML =
-formatMOTD(data.motd.raw.join(" "));
-
-if(data.icon){
-document.getElementById("bedrock-icon").src = data.icon;
-}
-}else{
-document.getElementById("bedrock-players").innerText="0/0";
-document.getElementById("bedrock-motd").innerText="Offline";
-}
-}catch{}
 }
 
-// loop
-updateJava();
-updateBedrock();
-setInterval(()=>{
-updateJava();
-updateBedrock();
-},10000);
+update();
+setInterval(update,10000);
 </script>
 
 </body>
