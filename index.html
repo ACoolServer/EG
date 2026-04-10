@@ -42,47 +42,23 @@
 
   body {
     font-family: 'Minecraft', monospace;
-    background-color: #1a1a2e;
-    background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.15) 31px, rgba(0,0,0,0.15) 32px),
-      repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(0,0,0,0.15) 31px, rgba(0,0,0,0.15) 32px);
-    background-size: 32px 32px;
     min-height: 100vh;
     overflow-x: hidden;
     color: white;
     image-rendering: pixelated;
+    background: #87ceeb;
   }
 
-  /* Animated background stars */
-  body::before {
-    content: '';
+  /* Sunrise sky canvas sits behind everything */
+  #sunrise-canvas {
     position: fixed;
     inset: 0;
-    background:
-      radial-gradient(1px 1px at 10% 20%, white, transparent),
-      radial-gradient(1px 1px at 30% 80%, white, transparent),
-      radial-gradient(1px 1px at 60% 15%, white, transparent),
-      radial-gradient(1px 1px at 75% 60%, white, transparent),
-      radial-gradient(1px 1px at 90% 35%, white, transparent),
-      radial-gradient(1px 1px at 50% 50%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(2px 2px at 20% 45%, rgba(255,255,255,0.6), transparent),
-      radial-gradient(1px 1px at 85% 80%, white, transparent);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .sky-gradient {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg,
-      #0a0a2e 0%,
-      #1a1a4a 25%,
-      #2a3a6a 50%,
-      #1a2a4a 75%,
-      #0a1a2a 100%
-    );
+    width: 100%; height: 100%;
     z-index: -1;
+    image-rendering: pixelated;
   }
+
+  .sky-gradient { display: none; }
 
   /* Floating particles */
   .particles {
@@ -96,17 +72,17 @@
     position: absolute;
     width: 4px;
     height: 4px;
-    background: #55ff55;
+    background: #ffdd88;
     opacity: 0;
-    animation: float-up 8s infinite;
+    animation: float-up 10s infinite;
     image-rendering: pixelated;
   }
   .particle:nth-child(2) { left: 20%; animation-delay: 1s; background: #ffaa00; }
-  .particle:nth-child(3) { left: 40%; animation-delay: 2s; background: #55ffff; }
-  .particle:nth-child(4) { left: 60%; animation-delay: 3s; background: #ff55ff; }
+  .particle:nth-child(3) { left: 40%; animation-delay: 2s; background: #fff176; }
+  .particle:nth-child(4) { left: 60%; animation-delay: 3s; background: #ff8800; }
   .particle:nth-child(5) { left: 80%; animation-delay: 4s; background: #ffff55; }
-  .particle:nth-child(6) { left: 10%; animation-delay: 5s; background: #ffffff; }
-  .particle:nth-child(7) { left: 70%; animation-delay: 6s; background: #55ff55; }
+  .particle:nth-child(6) { left: 10%; animation-delay: 5s; background: #ffe0a0; }
+  .particle:nth-child(7) { left: 70%; animation-delay: 6s; background: #ffcc44; }
   .particle:nth-child(8) { left: 50%; animation-delay: 7s; background: #ffaa00; }
   @keyframes float-up {
     0% { bottom: -10px; opacity: 0; transform: translateX(0); }
@@ -192,7 +168,7 @@
 
   /* Minecraft card */
   .mc-card {
-    background: #1a1a1a;
+    background: rgba(20, 20, 20, 0.88);
     border: 3px solid #555555;
     border-top-color: #888888;
     border-left-color: #888888;
@@ -343,62 +319,109 @@
     transition: width 0.5s ease;
   }
 
-  /* Buttons */
+  /* ══════════════════════════════════════════
+     TRUE MINECRAFT MENU BUTTON
+     Replicates widgets.png button exactly:
+     - Dark outer border (1px black)
+     - Mid border: top/left = #555, bot/right = #222  (the "frame")
+     - Inner border: top/left bright highlight, bot/right dark
+     - Face: #848484 grey with subtle banding
+     - Hover: face turns blue-purple #7070e0, text goes yellow
+  ══════════════════════════════════════════ */
   .mc-btn {
     display: block;
     width: 100%;
-    padding: 9px 12px;
-    background: linear-gradient(180deg, #555 0%, #444 50%, #3a3a3a 51%, #444 100%);
-    border: 2px solid #222;
-    border-top-color: #777;
-    border-left-color: #777;
-    color: #ddd;
+    height: 40px;
+    line-height: 36px;
+    padding: 0 8px;
+    border: none;
+    outline: none;
+    cursor: pointer;
     font-family: 'Minecraft', monospace;
     font-size: 11px;
-    text-align: center;
-    cursor: pointer;
     letter-spacing: 1px;
-    text-shadow: 2px 2px 0 #000;
-    box-shadow: 3px 3px 0 #000, inset 0 1px 0 #888;
-    margin-top: 8px;
+    text-align: center;
     text-decoration: none;
-    transition: transform 0.05s, filter 0.1s;
-    position: relative;
-    overflow: hidden;
+    margin-top: 8px;
+    -webkit-user-select: none; user-select: none;
     image-rendering: pixelated;
+    position: relative;
+    /* Pixel-art border via outline stacking */
+    /* Layer 1 – outermost black ring */
+    /* Layer 2 – dark face shadow sides */
+    /* Layer 3 – bright highlight sides */
+    /* Achieved with nested pseudo-elements + clip */
+
+    /* Default (grey stone) */
+    background-color: #848484;
+    color: #e0e0e0;
+    text-shadow: 1px 1px 0 #1a1a1a, 2px 2px 0 #1a1a1a;
+
+    /* The actual Minecraft button border is drawn pixel by pixel:
+       outer 1px = black
+       next 1px top+left = #aaaaaa (highlight), bot+right = #555555 (shadow)
+       next 1px top+left = #ffffff (inner highlight), bot+right = #2a2a2a (inner shadow)
+       face fill */
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%23848484'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23aaaaaa'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23aaaaaa'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23555'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23555'/%3E%3C/svg%3E") 2 fill;
+    border-width: 2px;
+    border-style: solid;
+    border-color: transparent;
   }
+
   .mc-btn:hover {
-    background: linear-gradient(180deg, #777 0%, #666 50%, #555 51%, #666 100%);
-    color: #fff;
-    filter: brightness(1.15);
+    background-color: #7070e0;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #2a2a00, 2px 2px 0 #2a2a00;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%237070e0'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23aaaaaa'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23aaaaaa'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23555'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23555'/%3E%3C/svg%3E") 2 fill;
   }
+
   .mc-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 #000;
+    background-color: #606060;
+    color: #cccccc;
+    filter: brightness(0.88);
   }
+
+  /* ── Green ── */
   .mc-btn.green {
-    background: linear-gradient(180deg, #2a6a1a 0%, #1e5214 50%, #183e10 51%, #1e5214 100%);
-    border-top-color: #4a9a2a;
-    border-left-color: #4a9a2a;
-    color: #aaffaa;
+    background-color: #3a7a1e;
+    color: #80ff80;
+    text-shadow: 1px 1px 0 #0a1e04, 2px 2px 0 #0a1e04;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%233a7a1e'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%2380cc44'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%2380cc44'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23193608'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23193608'/%3E%3C/svg%3E") 2 fill;
   }
-  .mc-btn.green:hover { background: linear-gradient(180deg, #3a8a2a 0%, #2a6a1e 50%, #1e5218 51%, #2a6a1e 100%); color: #ccffcc; }
+  .mc-btn.green:hover {
+    background-color: #4a9e28;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #1a2a00, 2px 2px 0 #1a2a00;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%234a9e28'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%2399ee55'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%2399ee55'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23193608'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23193608'/%3E%3C/svg%3E") 2 fill;
+  }
 
+  /* ── Blue ── */
   .mc-btn.blue {
-    background: linear-gradient(180deg, #1a3a6a 0%, #142a52 50%, #0e1e3a 51%, #142a52 100%);
-    border-top-color: #2a5aaa;
-    border-left-color: #2a5aaa;
-    color: #aaaaff;
+    background-color: #1e3c7a;
+    color: #aac0ff;
+    text-shadow: 1px 1px 0 #050e22, 2px 2px 0 #050e22;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%231e3c7a'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%235588cc'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%235588cc'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%230a1a3a'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%230a1a3a'/%3E%3C/svg%3E") 2 fill;
   }
-  .mc-btn.blue:hover { background: linear-gradient(180deg, #2a4a8a 0%, #1a3a62 50%, #12264a 51%, #1a3a62 100%); color: #ccccff; }
+  .mc-btn.blue:hover {
+    background-color: #3055bb;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #001044, 2px 2px 0 #001044;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%233055bb'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%2388aaee'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%2388aaee'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%230a1a3a'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%230a1a3a'/%3E%3C/svg%3E") 2 fill;
+  }
 
+  /* ── Red ── */
   .mc-btn.red {
-    background: linear-gradient(180deg, #6a1a1a 0%, #521414 50%, #3a0e0e 51%, #521414 100%);
-    border-top-color: #aa2a2a;
-    border-left-color: #aa2a2a;
+    background-color: #7a1e1e;
     color: #ffaaaa;
+    text-shadow: 1px 1px 0 #220505, 2px 2px 0 #220505;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%237a1e1e'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23cc5555'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23cc5555'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23330808'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23330808'/%3E%3C/svg%3E") 2 fill;
   }
-  .mc-btn.red:hover { background: linear-gradient(180deg, #8a2a2a 0%, #6a1a1a 50%, #4a1212 51%, #6a1a1a 100%); color: #ffcccc; }
+  .mc-btn.red:hover {
+    background-color: #aa2828;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #440000, 2px 2px 0 #440000;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%23aa2828'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23ff8888'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23ff8888'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23330808'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23330808'/%3E%3C/svg%3E") 2 fill;
+  }
 
   /* Wake server section */
   .wake-section {
@@ -501,7 +524,7 @@
 </style>
 </head>
 <body>
-<div class="sky-gradient"></div>
+<canvas id="sunrise-canvas"></canvas>
 <div class="particles">
   <div class="particle" style="left:5%"></div>
   <div class="particle"></div><div class="particle"></div>
@@ -602,8 +625,8 @@
 
       <div class="info-row">
         <span class="info-label">IP:</span>
-        <span class="info-value">ACoolServer.aternos.me</span>
-        <button class="copy-btn" onclick="copyText('ACoolServer.aternos.me', 'IP Copied!')">Copy</button>
+        <span class="info-value">ACoolServerEG.aternos.me</span>
+        <button class="copy-btn" onclick="copyText('ACoolServerEG.aternos.me', 'IP Copied!')">Copy</button>
       </div>
 
       <!-- Status + refresh -->
@@ -725,7 +748,7 @@ async function fetchJavaStatus() {
 
   const t0 = Date.now();
   try {
-    const res = await fetch('https://api.mcsrvstat.us/3/ACoolServer.aternos.me');
+    const res = await fetch('https://api.mcsrvstat.us/3/ACoolServerEG.aternos.me');
     const ping = Date.now() - t0;
     const data = await res.json();
 
@@ -790,7 +813,7 @@ function showToast(msg) {
 
 // ── Wake server ──────────────────────────────────────────────
 function wakeServer(type) {
-  const ip = type === 'java' ? 'ACoolServer.aternos.me' : 'ACoolServerBE.aternos.me';
+  const ip = type === 'java' ? 'ACoolServerEG.aternos.me' : 'ACoolServerBE.aternos.me';
   showToast('⚡ Pinging ' + ip + '...');
 
   // Trick: open the aternos page in background to try to trigger the server
@@ -818,6 +841,203 @@ function wakeServer(type) {
       window.open('https://aternos.org/server/', '_blank');
     });
 }
+
+// ── Minecraft Sunrise Background ────────────────────────────
+(function() {
+  const canvas = document.getElementById('sunrise-canvas');
+  const ctx = canvas.getContext('2d');
+  const BLOCK = 16;
+  let W, H, cols, rows;
+  let t = 0; // 0 = night → 1 = full day, loops ~120s
+
+  // Pixel-perfect resize
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cols = Math.ceil(W / BLOCK) + 1;
+    rows = Math.ceil(H / BLOCK) + 1;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Lerp helper
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpColor(c1, c2, t) {
+    return [
+      Math.round(lerp(c1[0], c2[0], t)),
+      Math.round(lerp(c1[1], c2[1], t)),
+      Math.round(lerp(c1[2], c2[2], t)),
+    ];
+  }
+  function rgb(c) { return `rgb(${c[0]},${c[1]},${c[2]})`; }
+
+  // Sky colors at different times: night→predawn→sunrise→morning→day
+  const SKY_STOPS = [
+    { t: 0.00, top: [10, 10, 40],   bot: [20, 10, 60]   },  // night
+    { t: 0.25, top: [30, 20, 80],   bot: [60, 30, 80]   },  // pre-dawn
+    { t: 0.45, top: [80, 40, 20],   bot: [200, 80, 20]  },  // sunrise horizon glow
+    { t: 0.60, top: [100, 140, 220],bot: [255, 140, 40] },  // orange sky
+    { t: 0.80, top: [100, 180, 255],bot: [180, 220, 255]},  // morning blue
+    { t: 1.00, top: [60, 160, 240], bot: [140, 200, 255]},  // day
+  ];
+
+  function getSkyColors(p) {
+    let s0 = SKY_STOPS[0], s1 = SKY_STOPS[1];
+    for (let i = 0; i < SKY_STOPS.length - 1; i++) {
+      if (p >= SKY_STOPS[i].t && p <= SKY_STOPS[i+1].t) {
+        s0 = SKY_STOPS[i]; s1 = SKY_STOPS[i+1]; break;
+      }
+    }
+    const tt = (p - s0.t) / (s1.t - s0.t + 0.0001);
+    return {
+      top: lerpColor(s0.top, s1.top, tt),
+      bot: lerpColor(s0.bot, s1.bot, tt),
+    };
+  }
+
+  // no clouds
+
+  // Minecraft-style terrain silhouette (bottom 20% of screen)
+  const TERRAIN_COLS = 80;
+  const terrain = [];
+  let h = 0.78;
+  for (let i = 0; i < TERRAIN_COLS; i++) {
+    h += (Math.random() - 0.48) * 0.03;
+    h = Math.max(0.70, Math.min(0.90, h));
+    // occasional tree
+    const hasTree = Math.random() < 0.12;
+    terrain.push({ base: h, tree: hasTree, treeH: hasTree ? 0.04 + Math.random() * 0.04 : 0 });
+  }
+
+  // Stars
+  const stars = [];
+  for (let i = 0; i < 80; i++) {
+    stars.push({ x: Math.random(), y: Math.random() * 0.7, r: Math.random() < 0.3 ? 2 : 1 });
+  }
+
+  // Sun: pixelated 16×16 block
+  function drawSun(cx, cy, sunY, phase) {
+    // phase 0=below → 1=risen
+    const alpha = Math.max(0, Math.min(1, (phase - 0.35) * 4));
+    if (alpha <= 0) return;
+
+    const S = BLOCK * 2.5;
+    const sx = cx - S / 2;
+    const sy = cy - S / 2;
+
+    // Glow
+    const glowR = S * (3 + (1 - phase) * 3);
+    const grd = ctx.createRadialGradient(cx, cy, S * 0.3, cx, cy, glowR);
+    const glowAlpha = alpha * (phase < 0.6 ? 0.6 : 0.25);
+    grd.addColorStop(0, `rgba(255,200,60,${glowAlpha})`);
+    grd.addColorStop(0.4, `rgba(255,120,0,${glowAlpha * 0.5})`);
+    grd.addColorStop(1, 'rgba(255,80,0,0)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
+
+    // Sun body (pixelated)
+    ctx.globalAlpha = alpha;
+    const P = Math.round(S / 8);
+    // outer ring
+    ctx.fillStyle = '#ffee44';
+    ctx.fillRect(sx + P, sy, S - P*2, S);
+    ctx.fillRect(sx, sy + P, S, S - P*2);
+    // center
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(sx + P*2, sy + P*2, S - P*4, S - P*4);
+    // corners darker
+    ctx.fillStyle = '#ffcc00';
+    ctx.fillRect(sx + P, sy + P, P, P);
+    ctx.fillRect(sx + S - P*2, sy + P, P, P);
+    ctx.fillRect(sx + P, sy + S - P*2, P, P);
+    ctx.fillRect(sx + S - P*2, sy + S - P*2, P, P);
+    ctx.globalAlpha = 1;
+  }
+
+  function draw(ts) {
+    t = (ts * 0.00003) % 1; // full cycle ~33s
+    const phase = t; // 0→1
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Sky gradient
+    const sky = getSkyColors(phase);
+    const grd = ctx.createLinearGradient(0, 0, 0, H);
+    grd.addColorStop(0, rgb(sky.top));
+    grd.addColorStop(1, rgb(sky.bot));
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars (fade out as sun rises)
+    const starAlpha = Math.max(0, 1 - phase * 5);
+    if (starAlpha > 0) {
+      ctx.fillStyle = `rgba(255,255,255,${starAlpha})`;
+      for (const s of stars) {
+        ctx.fillRect(Math.round(s.x * W), Math.round(s.y * H), s.r, s.r);
+      }
+    }
+
+    // Sun
+    const sunX = W * 0.38;
+    // arc: starts below horizon, rises to ~30% height
+    const sunProgress = Math.max(0, (phase - 0.3) / 0.7);
+    const sunY = H * (0.85 - sunProgress * 0.55);
+    drawSun(sunX, sunY, sunY, phase);
+
+    // Horizon glow band (when sun is near horizon)
+    if (phase > 0.3 && phase < 0.75) {
+      const glowStrength = Math.sin(Math.max(0, (phase - 0.3) / 0.45) * Math.PI);
+      const horizonY = H * 0.72;
+      const hgrd = ctx.createLinearGradient(0, horizonY - H * 0.15, 0, horizonY + H * 0.1);
+      hgrd.addColorStop(0, `rgba(255,120,0,0)`);
+      hgrd.addColorStop(0.5, `rgba(255,100,20,${glowStrength * 0.45})`);
+      hgrd.addColorStop(1, `rgba(255,60,0,0)`);
+      ctx.fillStyle = hgrd;
+      ctx.fillRect(0, horizonY - H * 0.15, W, H * 0.25);
+    }
+
+
+
+    // Terrain silhouette
+    const tBase = H * 0.88;
+    const tW = W / TERRAIN_COLS;
+    for (let i = 0; i < TERRAIN_COLS; i++) {
+      const col = terrain[i];
+      const bx = Math.round(i * tW);
+      const by = Math.round(col.base * H);
+      const bw = Math.ceil(tW) + 1;
+
+      // Grass top
+      ctx.fillStyle = phase > 0.6 ? '#4a8a20' : phase > 0.4 ? '#3a6a18' : '#1a3a0a';
+      ctx.fillRect(bx, by, bw, BLOCK);
+      // Dirt
+      ctx.fillStyle = phase > 0.6 ? '#6b4226' : '#3a2010';
+      ctx.fillRect(bx, by + BLOCK, bw, H - by);
+
+      // Tree
+      if (col.tree) {
+        const tx = bx + Math.round(tW / 2) - BLOCK / 2;
+        const treeTop = by - Math.round(col.treeH * H);
+        // trunk
+        ctx.fillStyle = phase > 0.5 ? '#5a3a18' : '#2a1a08';
+        ctx.fillRect(tx + BLOCK/2 - 2, treeTop + BLOCK*2, 4, by - treeTop - BLOCK*2);
+        // leaves (3×3 blocky)
+        ctx.fillStyle = phase > 0.6 ? '#2d6e1a' : phase > 0.4 ? '#1e4e12' : '#0e2808';
+        ctx.fillRect(tx - BLOCK/2, treeTop, BLOCK*2, BLOCK*2);
+        ctx.fillRect(tx - BLOCK, treeTop + BLOCK, BLOCK*3, BLOCK);
+      }
+    }
+
+    // Pixel grid overlay (subtle)
+    ctx.fillStyle = 'rgba(0,0,0,0.04)';
+    for (let x = 0; x < W; x += BLOCK) ctx.fillRect(x, 0, 1, H);
+    for (let y = 0; y < H; y += BLOCK) ctx.fillRect(0, y, W, 1);
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+})();
 
 // ── Init ─────────────────────────────────────────────────────
 fetchJavaStatus();
