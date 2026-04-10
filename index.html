@@ -98,14 +98,6 @@ color:black;
 font-size:7px;
 }
 
-/* status */
-.status{
-font-size:7px;
-font-weight:bold;
-}
-.online{color:#00aa00;}
-.offline{color:#aa0000;}
-
 /* buttons */
 .mc-btn{
 background:#c6c6c6;
@@ -148,6 +140,7 @@ font-size:7px;
 display:none;
 z-index:10;
 }
+
 .notification.show{display:block;}
 </style>
 </head>
@@ -167,26 +160,14 @@ z-index:10;
 <div id="motd" class="motd">Loading MOTD...</div>
 
 <div class="mc-row">
-<span>PLAYERS:</span>
+<span>PLAYERS</span>
 <span id="players">...</span>
 </div>
-</div>
-</div>
 
-<!-- JAVA -->
-<div class="mc-panel">
-<div class="mc-header">JAVA</div>
-<div class="mc-body">
-
-<div class="mc-row">
-<span>ACoolServerEG.aternos.me</span>
-<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
-</div>
-
-<div class="mc-row">
-<span>STATUS:</span>
-<span id="status" class="status offline">Checking...</span>
-</div>
+<a class="big-btn" target="_blank"
+href="https://aternos.org/server/#ACoolServerEG">
+AUTO START SERVER
+</a>
 
 </div>
 </div>
@@ -209,6 +190,19 @@ z-index:10;
 <a class="big-btn" href="minecraft://?addExternalServer=ACoolServerBE|ACoolServerBE.aternos.me:48917">
 ADD TO BEDROCK
 </a>
+
+</div>
+</div>
+
+<!-- JAVA -->
+<div class="mc-panel">
+<div class="mc-header">JAVA</div>
+<div class="mc-body">
+
+<div class="mc-row">
+<span>ACoolServerEG.aternos.me</span>
+<button class="mc-btn" onclick="copyText('ACoolServerEG.aternos.me')">COPY</button>
+</div>
 
 </div>
 </div>
@@ -236,10 +230,8 @@ n.classList.add("show");
 setTimeout(()=>n.classList.remove("show"),1200);
 }
 
-// MOTD format (safe)
-function formatMOTD(text){
-if(!text) return "No MOTD";
-
+// FULL MOTD COLOR SUPPORT
+function formatMOTD(lines){
 const colors={
 "0":"#000000","1":"#0000AA","2":"#00AA00","3":"#00AAAA",
 "4":"#AA0000","5":"#AA00AA","6":"#FFAA00","7":"#AAAAAA",
@@ -247,54 +239,39 @@ const colors={
 "c":"#FF5555","d":"#FF55FF","e":"#FFFF55","f":"#FFFFFF"
 };
 
-let result="";
-let style={color:null,bold:false,italic:false};
+let html="";
+
+lines.forEach(line=>{
 let open=false;
+let result="";
 
-function span(){
-let s="";
-if(style.color) s+=`color:${style.color};`;
-if(style.bold) s+="font-weight:bold;";
-if(style.italic) s+="font-style:italic;";
-return `<span style="${s}">`;
+for(let i=0;i<line.length;i++){
+if(line[i]=="§"){
+let code=line[i+1]?.toLowerCase();
+
+if(colors[code]){
+if(open) result+="</span>";
+result+=`<span style="color:${colors[code]}">`;
+open=true;
+i++;
+continue;
 }
 
-for(let i=0;i<text.length;i++){
-if(text[i]=="§"){
-let c=text[i+1]?.toLowerCase();
-
-if(colors[c]){
+if(code==="r"){
 if(open) result+="</span>";
-style.color=colors[c];
-open=true;
-result+=span();
-i++; continue;
-}
-if(c==="l"){
-if(open) result+="</span>";
-style.bold=true;
-open=true;
-result+=span();
-i++; continue;
-}
-if(c==="o"){
-if(open) result+="</span>";
-style.italic=true;
-open=true;
-result+=span();
-i++; continue;
-}
-if(c==="r"){
-if(open) result+="</span>";
-style={color:null,bold:false,italic:false};
 open=false;
-i++; continue;
+i++;
+continue;
 }
 }
-result+=text[i];
+result+=line[i];
 }
+
 if(open) result+="</span>";
-return result;
+html+=result+"<br>";
+});
+
+return html;
 }
 
 // fetch
@@ -303,28 +280,17 @@ try{
 let res=await fetch("https://api.mcsrvstat.us/2/ACoolServerEG.aternos.me");
 let data=await res.json();
 
-let statusEl=document.getElementById("status");
-
-if(data && data.online){
-statusEl.textContent="ONLINE";
-statusEl.className="status online";
-
+if(data.online){
 document.getElementById("players").innerText =
-data.players?.online + "/" + data.players?.max;
+data.players.online+"/"+data.players.max;
 
-let raw = data.motd?.raw?.join("<br>") || data.motd?.clean?.join("<br>") || "No MOTD";
-document.getElementById("motd").innerHTML = formatMOTD(raw);
-
+document.getElementById("motd").innerHTML =
+formatMOTD(data.motd.raw);
 }else{
-statusEl.textContent="OFFLINE";
-statusEl.className="status offline";
-
 document.getElementById("players").innerText="0/0";
-document.getElementById("motd").innerText="Server Offline";
+document.getElementById("motd").innerHTML="§cOffline";
 }
-
-}catch(e){
-document.getElementById("status").textContent="ERROR";
+}catch{
 document.getElementById("players").innerText="ERR";
 }
 }
