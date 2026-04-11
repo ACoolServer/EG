@@ -256,68 +256,7 @@
   .copy-btn:hover { background: #333; color: #fff; border-color: #888; }
   .copy-btn:active { transform: scale(0.95); }
 
-  /* MOTD Box */
-  .motd-box {
-    background: #0a0a0a;
-    border: 2px solid #333;
-    border-top-color: #222;
-    border-left-color: #222;
-    padding: 10px 12px;
-    margin: 12px 0;
-    min-height: 52px;
-    font-size: 11px;
-    line-height: 1.6;
-    position: relative;
-    box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
-  }
-  .motd-loading {
-    color: #555;
-    animation: blink 1s step-end infinite;
-    font-size: 10px;
-  }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-  .motd-line { display: block; white-space: pre-wrap; word-break: break-word; }
-
-  /* Player bar */
-  .player-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 8px 0;
-    font-size: 9px;
-  }
-  .player-label { color: #888; }
-  .player-count { color: #55ff55; }
-  .player-max { color: #aaa; }
-  .ping-dot {
-    width: 8px; height: 8px;
-    background: #55ff55;
-    border-radius: 0;
-    margin-left: auto;
-    box-shadow: 0 0 6px #55ff55;
-    animation: ping-pulse 2s ease-in-out infinite;
-  }
-  .ping-dot.offline { background: #ff5555; box-shadow: 0 0 6px #ff5555; animation: none; }
-  @keyframes ping-pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 6px #55ff55; }
-    50% { opacity: 0.6; box-shadow: 0 0 12px #55ff55; }
-  }
-  .ping-label { font-size: 8px; color: #888; }
-
-  /* Health bar style player bar */
-  .health-bar {
-    height: 6px;
-    background: #222;
-    border: 1px solid #333;
-    flex: 1;
-    overflow: hidden;
-  }
-  .health-fill {
-    height: 100%;
-    background: #55ff55;
-    transition: width 0.5s ease;
-  }
+  .motd-line { display: none; }
 
   /* ══════════════════════════════════════════
      TRUE MINECRAFT MENU BUTTON
@@ -587,12 +526,6 @@
         📱 Auto Add Server
       </a>
 
-      <div class="wake-section">
-        <div class="wake-label">— server tools —</div>
-        <button class="mc-btn red" onclick="wakeServer('bedrock')">
-          ⚡ Wake Up Server
-        </button>
-      </div>
     </div>
 
     <!-- JAVA CARD -->
@@ -640,27 +573,6 @@
         <span class="version-tag" id="version-tag"></span>
       </div>
 
-      <!-- MOTD -->
-      <div class="motd-box">
-        <span id="motd-content" class="motd-loading">Fetching server info...</span>
-      </div>
-
-      <!-- Player bar -->
-      <div class="player-bar">
-        <span class="player-label">Players:</span>
-        <span class="player-count" id="player-online">-</span>
-        <span class="player-max" id="player-max">/  -</span>
-        <div class="health-bar"><div class="health-fill" id="player-fill" style="width:0%"></div></div>
-        <div class="ping-dot" id="ping-dot"></div>
-        <span class="ping-label" id="ping-label">--ms</span>
-      </div>
-
-      <div class="wake-section">
-        <div class="wake-label">— server tools —</div>
-        <button class="mc-btn red" onclick="wakeServer('java')">
-          ⚡ Wake Up Server
-        </button>
-      </div>
     </div>
 
   </div>
@@ -728,7 +640,7 @@ function parseMOTD(raw) {
   return html || '<span style="color:#555">No MOTD</span>';
 }
 
-// ── Fetch Java server status via mcsrvstat.us ────────────────
+// ── Fetch Java server status via mcstatus.io ────────────────
 async function fetchJavaStatus() {
   const dot = document.getElementById('status-dot');
   const statusText = document.getElementById('status-text');
@@ -748,7 +660,7 @@ async function fetchJavaStatus() {
 
   const t0 = Date.now();
   try {
-    const res = await fetch('https://api.mcsrvstat.us/3/ACoolServerEG.aternos.me');
+    const res = await fetch('https://api.mcstatus.io/v2/status/java/ACoolServerEG.aternos.me');
     const ping = Date.now() - t0;
     const data = await res.json();
 
@@ -759,10 +671,8 @@ async function fetchJavaStatus() {
       pingLabel.textContent = ping + 'ms';
       pingDot.className = 'ping-dot';
 
-      // MOTD
-      const rawMotd = data.motd?.raw?.[0]
-        ? data.motd.raw.join('\n')
-        : (data.motd?.clean?.[0] || 'A Minecraft Server');
+      // mcstatus.io returns motd.raw as a string with §codes
+      const rawMotd = data.motd?.raw || data.motd?.clean || 'A Minecraft Server';
       motd.className = 'motd-line';
       motd.innerHTML = parseMOTD(rawMotd);
 
@@ -776,23 +686,39 @@ async function fetchJavaStatus() {
       playerFill.style.background = pct > 80 ? '#ff5555' : pct > 50 ? '#ffaa00' : '#55ff55';
 
       // Version
-      if (data.version) versionTag.textContent = data.version;
+      if (data.version?.name_clean) versionTag.textContent = data.version.name_clean;
+
     } else {
       dot.className = 'status-dot offline';
       statusText.className = 'status-text offline';
       statusText.textContent = 'Offline';
       pingDot.className = 'ping-dot offline';
       pingLabel.textContent = '--ms';
+
+      // Aternos sends its own MOTD even when offline — show it
+      const rawMotd = data.motd?.raw || data.motd?.clean || '';
       motd.className = 'motd-line';
-      motd.innerHTML = '<span style="color:#ff5555">Server is offline</span><br><span style="color:#888">Try waking it up below!</span>';
+      if (rawMotd) {
+        motd.innerHTML = parseMOTD(rawMotd);
+      } else {
+        motd.innerHTML = '<span style="color:#ff5555">Server is offline</span><br><span style="color:#888">Start it on Aternos to play!</span>';
+      }
+
       playerOnline.textContent = '0';
-      playerMax.textContent = '/ 0';
+      playerMax.textContent = '/ ?';
       playerFill.style.width = '0%';
     }
   } catch(e) {
     dot.className = 'status-dot offline';
-    statusText.textContent = 'Error';
-    motd.innerHTML = '<span style="color:#ff5555">Could not reach API</span>';
+    statusText.className = 'status-text offline';
+    statusText.textContent = 'Offline';
+    pingDot.className = 'ping-dot offline';
+    pingLabel.textContent = '--ms';
+    motd.className = 'motd-line';
+    motd.innerHTML = '<span style="color:#ff5555">Server is offline</span><br><span style="color:#888">Start it on Aternos to play!</span>';
+    playerOnline.textContent = '0';
+    playerMax.textContent = '/ ?';
+    playerFill.style.width = '0%';
   }
 }
 
@@ -809,37 +735,6 @@ function showToast(msg) {
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-// ── Wake server ──────────────────────────────────────────────
-function wakeServer(type) {
-  const ip = type === 'java' ? 'ACoolServerEG.aternos.me' : 'ACoolServerBE.aternos.me';
-  showToast('⚡ Pinging ' + ip + '...');
-
-  // Trick: open the aternos page in background to try to trigger the server
-  // Also attempts a fetch ping to the server query API
-  const link = document.createElement('a');
-  link.href = 'https://aternos.org/server/';
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-
-  // Attempt a query ping (this often activates aternos servers)
-  fetch(`https://api.mcsrvstat.us/3/${ip}`)
-    .then(r => r.json())
-    .then(d => {
-      if (d.online) {
-        showToast('✔ Server is already online!');
-        if (type === 'java') fetchJavaStatus();
-      } else {
-        showToast('💤 Server sleeping. Opening Aternos...');
-        setTimeout(() => { window.open('https://aternos.org/server/', '_blank'); }, 800);
-        setTimeout(() => showToast('👆 Log in & press Start!'), 2500);
-      }
-    })
-    .catch(() => {
-      showToast('Opening Aternos panel...');
-      window.open('https://aternos.org/server/', '_blank');
-    });
 }
 
 // ── Minecraft Sunrise Background ────────────────────────────
@@ -1028,11 +923,6 @@ function wakeServer(type) {
       }
     }
 
-    // Pixel grid overlay (subtle)
-    ctx.fillStyle = 'rgba(0,0,0,0.04)';
-    for (let x = 0; x < W; x += BLOCK) ctx.fillRect(x, 0, 1, H);
-    for (let y = 0; y < H; y += BLOCK) ctx.fillRect(0, y, W, 1);
-
     requestAnimationFrame(draw);
   }
 
@@ -1040,8 +930,6 @@ function wakeServer(type) {
 })();
 
 // ── Init ─────────────────────────────────────────────────────
-fetchJavaStatus();
-setInterval(fetchJavaStatus, 60000); // auto-refresh every 60s
 </script>
 </body>
 </html>
