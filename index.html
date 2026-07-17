@@ -49,6 +49,614 @@
     background: #87ceeb;
   }
 
+  #sunrise-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    image-rendering: pixelated;
+  }
+
+  .sky-gradient { display: none; }
+
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffdd88;
+    opacity: 0;
+    animation: float-up 10s infinite;
+    image-rendering: pixelated;
+  }
+  .particle:nth-child(2) { left: 20%; animation-delay: 1s; background: #ffaa00; }
+  .particle:nth-child(3) { left: 40%; animation-delay: 2s; background: #fff176; }
+  .particle:nth-child(4) { left: 60%; animation-delay: 3s; background: #ff8800; }
+  .particle:nth-child(5) { left: 80%; animation-delay: 4s; background: #ffff55; }
+  .particle:nth-child(6) { left: 10%; animation-delay: 5s; background: #ffe0a0; }
+  .particle:nth-child(7) { left: 70%; animation-delay: 6s; background: #ffcc44; }
+  .particle:nth-child(8) { left: 50%; animation-delay: 7s; background: #ffaa00; }
+  @keyframes float-up {
+    0% { bottom: -10px; opacity: 0; transform: translateX(0); }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.4; }
+    100% { bottom: 100vh; opacity: 0; transform: translateX(20px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-top: 20px;
+  }
+
+  .header-title {
+    font-size: clamp(20px, 5vw, 36px);
+    color: #ffaa00;
+    text-shadow:
+      3px 3px 0 #7a5200,
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+    letter-spacing: 2px;
+    animation: title-pulse 3s ease-in-out infinite;
+    display: block;
+    line-height: 1.4;
+  }
+  .header-title span {
+    color: #55ff55;
+    text-shadow:
+      3px 3px 0 #1a7a1a,
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+  }
+  @keyframes title-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+  }
+
+  .header-subtitle {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaaaaa;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+  }
+
+  .divider {
+    height: 8px;
+    background: repeating-linear-gradient(90deg,
+      #5d9e3f 0px, #5d9e3f 16px,
+      #4a7d32 16px, #4a7d32 32px,
+      #5d9e3f 32px
+    );
+    box-shadow: 0 4px 0 #3a5a20, 0 -2px 0 #7aca55;
+    margin: 20px 0;
+    image-rendering: pixelated;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+
+  .mc-card {
+    background: rgba(20, 20, 20, 0.88);
+    border: 3px solid #555555;
+    border-top-color: #888888;
+    border-left-color: #888888;
+    border-bottom-color: #333333;
+    border-right-color: #333333;
+    padding: 16px;
+    position: relative;
+    box-shadow:
+      inset 1px 1px 0 #666666,
+      inset -1px -1px 0 #222222,
+      4px 4px 0 rgba(0,0,0,0.6);
+    animation: card-in 0.4s ease both;
+  }
+  .mc-card:nth-child(2) { animation-delay: 0.1s; }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .bedrock-title { color: #5599ff; text-shadow: 2px 2px 0 #002299, 0 0 8px #0044ff44; }
+  .java-title { color: #55ff55; text-shadow: 2px 2px 0 #005500, 0 0 8px #00ff0044; }
+
+  .card-badge {
+    margin-left: auto;
+    font-size: 8px;
+    padding: 3px 7px;
+    border: 2px solid;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .bedrock-badge { color: #5599ff; border-color: #5599ff; }
+  .java-badge { color: #55ff55; border-color: #55ff55; }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+  .info-label {
+    color: #888;
+    min-width: 38px;
+    text-shadow: 1px 1px 0 #000;
+  }
+  .info-value {
+    color: #ffff55;
+    text-shadow: 1px 1px 0 #555500;
+    word-break: break-all;
+  }
+  .copy-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #555;
+    color: #aaa;
+    font-family: 'Minecraft', monospace;
+    font-size: 8px;
+    cursor: pointer;
+    padding: 2px 6px;
+    transition: all 0.1s;
+  }
+  .copy-btn:hover { background: #333; color: #fff; border-color: #888; }
+  .copy-btn:active { transform: scale(0.95); }
+
+  /* Dynamic Data Styles */
+  .motd-container {
+    background: #000;
+    border: 2px solid #333;
+    padding: 8px;
+    font-size: 9px;
+    margin: 8px 0;
+    min-height: 38px;
+    line-height: 1.3;
+  }
+  
+  .player-bar-bg {
+    background: #222;
+    border: 1px solid #444;
+    height: 10px;
+    margin: 6px 0;
+    position: relative;
+  }
+  .player-bar-fill {
+    background: #55ff55;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .mc-btn {
+    display: block;
+    width: 100%;
+    height: 40px;
+    line-height: 36px;
+    padding: 0 8px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Minecraft', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 8px;
+    -webkit-user-select: none; user-select: none;
+    image-rendering: pixelated;
+    position: relative;
+    background-color: #848484;
+    color: #e0e0e0;
+    text-shadow: 1px 1px 0 #1a1a1a, 2px 2px 0 #1a1a1a;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%23848484'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23aaaaaa'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23aaaaaa'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23555'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23555'/%3E%3C/svg%3E") 2 fill;
+    border-width: 2px;
+    border-style: solid;
+    border-color: transparent;
+  }
+
+  .mc-btn:hover {
+    background-color: #7070e0;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #2a2a00, 2px 2px 0 #2a2a00;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%237070e0'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%23aaaaaa'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%23aaaaaa'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%23555'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%23555'/%3E%3C/svg%3E") 2 fill;
+  }
+
+  .mc-btn:active {
+    background-color: #606060;
+    color: #cccccc;
+    filter: brightness(0.88);
+  }
+
+  .mc-btn.blue {
+    background-color: #1e3c7a;
+    color: #aac0ff;
+    text-shadow: 1px 1px 0 #050e22, 2px 2px 0 #050e22;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%231e3c7a'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%235588cc'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%235588cc'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%230a1a3a'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%230a1a3a'/%3E%3C/svg%3E") 2 fill;
+  }
+  .mc-btn.blue:hover {
+    background-color: #3055bb;
+    color: #ffff00;
+    text-shadow: 1px 1px 0 #001044, 2px 2px 0 #001044;
+    border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='6' height='6' fill='%23000'/%3E%3Crect x='1' y='1' width='4' height='4' fill='%233055bb'/%3E%3Crect x='1' y='1' width='4' height='1' fill='%2388aaee'/%3E%3Crect x='1' y='1' width='1' height='4' fill='%2388aaee'/%3E%3Crect x='1' y='4' width='4' height='1' fill='%230a1a3a'/%3E%3Crect x='4' y='1' width='1' height='4' fill='%230a1a3a'/%3E%3C/svg%3E") 2 fill;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: #1a1a1a;
+    border: 2px solid #555;
+    border-top-color: #888;
+    border-left-color: #888;
+    padding: 10px 20px;
+    color: #55ff55;
+    font-family: 'Minecraft', monospace;
+    font-size: 11px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 3px 3px 0 #000;
+    z-index: 9999;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  .grass-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(90deg,
+      #5d9e3f 0px, #5d9e3f 16px,
+      #4a7d32 16px, #4a7d32 32px
+    );
+    box-shadow: 0 -4px 0 #8b5a2b;
+    z-index: 100;
+    image-rendering: pixelated;
+  }
+
+  .refresh-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+  .refresh-tiny {
+    background: none;
+    border: 1px solid #333;
+    color: #555;
+    font-family: 'Minecraft', monospace;
+    font-size: 8px;
+    cursor: pointer;
+    padding: 2px 6px;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+  }
+  .refresh-tiny:hover { color: #aaa; border-color: #555; }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 8px;
+    margin-bottom: 6px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #555;
+  }
+  .status-dot.online { background: #55ff55; box-shadow: 0 0 6px #55ff5566; }
+  .status-dot.offline { background: #ff5555; }
+  .status-text { color: #888; }
+  .status-text.online { color: #55ff55; }
+  .status-text.offline { color: #ff5555; }
+
+  .version-tag {
+    font-size: 8px;
+    color: #555;
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<canvas id="sunrise-canvas"></canvas>
+<div class="particles">
+  <div class="particle" style="left:5%"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <span class="header-title">⚔ Mohamed's<br><span>Servers</span> ⚔</span>
+    <div class="header-subtitle">✦ Join the adventure ✦</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards-grid">
+
+    <!-- BEDROCK CARD -->
+    <div class="mc-card">
+      <div class="card-header">
+        <svg class="card-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <rect width="16" height="16" fill="#888"/>
+          <rect x="2" y="2" width="3" height="3" fill="#aaa"/>
+          <rect x="7" y="1" width="2" height="2" fill="#aaa"/>
+          <rect x="11" y="3" width="3" height="2" fill="#aaa"/>
+          <rect x="1" y="7" width="2" height="3" fill="#aaa"/>
+          <rect x="5" y="6" width="3" height="2" fill="#aaa"/>
+          <rect x="10" y="7" width="2" height="3" fill="#aaa"/>
+          <rect x="3" y="11" width="3" height="2" fill="#aaa"/>
+          <rect x="8" y="12" width="4" height="2" fill="#aaa"/>
+          <rect x="0" y="0" width="16" height="1" fill="#999"/>
+          <rect x="0" y="0" width="1" height="16" fill="#999"/>
+          <rect x="0" y="15" width="16" height="1" fill="#666"/>
+          <rect x="15" y="0" width="1" height="16" fill="#666"/>
+        </svg>
+        <div>
+          <div class="card-title bedrock-title">Bedrock Edition</div>
+        </div>
+        <div class="card-badge bedrock-badge">BE</div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">IP:</span>
+        <span class="info-value" id="be-ip">Hi-SMP.aternos.me</span>
+        <button class="copy-btn" onclick="copyText('Hi-SMP.aternos.me', 'IP Copied!')">Copy</button>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Port:</span>
+        <span class="info-value">36537</span>
+        <button class="copy-btn" onclick="copyText('36537', 'Port Copied!')">Copy</button>
+      </div>
+
+      <div style="margin-top:4px; font-size:8px; color:#555; letter-spacing:1px; padding: 6px 0;">
+        ▸ Supports: Windows 10/11, Mobile, Console
+      </div>
+
+      <a class="mc-btn blue" href="minecraft://?addExternalServer=Mohamed's Server|Hi-SMP.aternos.me:36537">
+        📱 Auto Add Server
+      </a>
+    </div>
+
+    <!-- JAVA CARD -->
+    <div class="mc-card">
+      <div class="card-header">
+        <svg class="card-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <rect width="16" height="16" fill="#8b5a2b"/>
+          <rect x="1" y="3" width="2" height="1" fill="#a0723a"/>
+          <rect x="5" y="5" width="3" height="2" fill="#a0723a"/>
+          <rect x="10" y="4" width="2" height="1" fill="#a0723a"/>
+          <rect x="3" y="9" width="2" height="2" fill="#a0723a"/>
+          <rect x="8" y="10" width="4" height="1" fill="#a0723a"/>
+          <rect x="0" y="0" width="16" height="5" fill="#5d9e3f"/>
+          <rect x="1" y="4" width="1" height="2" fill="#5d9e3f"/>
+          <rect x="3" y="4" width="2" height="1" fill="#5d9e3f"/>
+          <rect x="7" y="4" width="1" height="2" fill="#5d9e3f"/>
+          <rect x="10" y="4" width="2" height="2" fill="#5d9e3f"/>
+          <rect x="13" y="4" width="2" height="1" fill="#5d9e3f"/>
+          <rect x="0" y="0" width="16" height="1" fill="#7aca55"/>
+          <rect x="0" y="0" width="1" height="5" fill="#7aca55"/>
+          <rect x="0" y="15" width="16" height="1" fill="#5a3a1a"/>
+          <rect x="15" y="0" width="1" height="16" fill="#5a3a1a"/>
+        </svg>
+        <div>
+          <div class="card-title java-title">Java Edition</div>
+        </div>
+        <div class="card-badge java-badge">JE</div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">IP:</span>
+        <span class="info-value">Hi-SMP.aternos.me</span>
+        <button class="copy-btn" onclick="copyText('Hi-SMP.aternos.me', 'IP Copied!')">Copy</button>
+      </div>
+
+      <div class="info-row">
+        <span class="info-label">Players:</span>
+        <span class="info-value" id="player-count">0 / 0</span>
+      </div>
+
+      <div class="player-bar-bg">
+        <div class="player-bar-fill" id="player-fill"></div>
+      </div>
+
+      <div class="motd-container" id="motd-content">
+        <span style="color:#888">A Minecraft Server</span>
+      </div>
+
+      <div class="refresh-row">
+        <button class="refresh-tiny" onclick="fetchJavaStatus()">↻ Refresh</button>
+      </div>
+
+      <div class="status-row">
+        <div class="status-dot" id="status-dot"></div>
+        <span class="status-text" id="status-text">Checking...</span>
+        <span class="version-tag" id="version-tag"></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="grass-bottom"></div>
+
+<script>
+const MC_COLORS = {
+  '0': '#000000', '1': '#0000aa', '2': '#00aa00', '3': '#00aaaa',
+  '4': '#aa0000', '5': '#aa00aa', '6': '#ffaa00', '7': '#aaaaaa',
+  '8': '#555555', '9': '#5555ff', 'a': '#55ff55', 'b': '#55ffff',
+  'c': '#ff5555', 'd': '#ff55ff', 'e': '#ffff55', 'f': '#ffffff',
+};
+const MC_FORMATS = {
+  'l': 'font-weight:bold',
+  'o': 'font-style:italic',
+  'n': 'text-decoration:underline',
+  'm': 'text-decoration:line-through',
+};
+
+function parseMOTD(raw) {
+  if (!raw) return '<span style="color:#555">No MOTD</span>';
+  if (Array.isArray(raw)) {
+    raw = raw.map(p => typeof p === 'string' ? p : (p.text || '')).join('');
+  }
+  if (typeof raw === 'object' && raw.text !== undefined) {
+    raw = raw.text;
+  }
+  raw = String(raw);
+
+  let html = '';
+  let color = '#ffffff';
+  let formats = [];
+  let i = 0;
+
+  while (i < raw.length) {
+    if ((raw[i] === '§' || raw[i] === '\u00a7') && i + 1 < raw.length) {
+      const code = raw[i + 1].toLowerCase();
+      if (MC_COLORS[code]) {
+        color = MC_COLORS[code];
+        formats = [];
+      } else if (MC_FORMATS[code]) {
+        formats.push(MC_FORMATS[code]);
+      } else if (code === 'r') {
+        color = '#ffffff';
+        formats = [];
+      }
+      i += 2;
+    } else if (raw[i] === '\n') {
+      html += '<br>';
+      i++;
+    } else {
+      let style = `color:${color};`;
+      if (formats.length) style += formats.join(';') + ';';
+      const char = raw[i].replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      html += `<span style="${style}">${char}</span>`;
+      i++;
+    }
+  }
+  return html || '<span style="color:#555">No MOTD</span>';
+}
+
+async function fetchJavaStatus() {
+  const dot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const versionTag = document.getElementById('version-tag');
+  const motd = document.getElementById('motd-content');
+  const playerCount = document.getElementById('player-count');
+  const playerFill = document.getElementById('player-fill');
+
+  dot.className = 'status-dot';
+  statusText.className = 'status-text';
+  statusText.textContent = 'Checking...';
+  motd.innerHTML = '<span style="color:#888">Pinging...</span>';
+
+  try {
+    const res = await fetch('https://api.mcstatus.io/v2/status/java/Hi-SMP.aternos.me');
+    const data = await res.json();
+
+    if (data.online) {
+      dot.className = 'status-dot online';
+      statusText.className = 'status-text online';
+      statusText.textContent = 'Online';
+      
+      if (data.version?.name_clean) {
+        versionTag.textContent = data.version.name_clean;
+      }
+
+      const rawMotd = data.motd?.raw || data.motd?.clean || 'A Minecraft Server';
+      motd.innerHTML = parseMOTD(rawMotd);
+
+      // Extract and modify player counts (minus 2 adjustment)
+      let online = data.players?.online ?? 0;
+      let max = data.players?.max ?? 0;
+      
+      online = Math.max(0, online - 2);
+      max = Math.max(0, max - 2);
+
+      playerCount.textContent = `${online} / ${max}`;
+      
+      const pct = max > 0 ? Math.min(100, (online / max) * 100) : 0;
+      playerFill.style.width = pct + '%';
+    } else {
+      dot.className = 'status-dot offline';
+      statusText.className = 'status-text offline';
+      statusText.textContent = 'Offline';
+      versionTag.textContent = '';
+      playerCount.textContent = '0 / 0';
+      playerFill.style.width = '0%';
+      motd.innerHTML = '<span style="color:#ff5555">Server Offline</span>';
+    }
+  } catch(e) {
+    dot.className = 'status-dot offline';
+    statusText.className = 'status-text offline';
+    statusText.textContent = 'Offline';
+    versionTag.tex    --dark-gray: #555555;
+    --pink: #ff55ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Minecraft', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: white;
+    image-rendering: pixelated;
+    background: #87ceeb;
+  }
+
   /* Sunrise sky canvas sits behind everything */
   #sunrise-canvas {
     position: fixed;
